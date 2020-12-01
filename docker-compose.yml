@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+ mysql:
+  build:
+   context: './mysql/'
+  networks:
+   - backend
+  ports:
+   - "3306:3306"
+  volumes:
+   - mysql:/var/lib/mysql
+  environment:
+   MYSQL_USER: 'user'
+   MYSQL_PASSWORD: 'user1234'
+   MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+   MYSQL_ROOT_PASSWORD: 'root'
+   MYSQL_DATABASE: 'mysqlDB'
+  restart: always
+ php:
+  build:
+   context: './php/'
+  networks:
+   - backend
+  volumes:
+   - "./www/:/var/www/html/"
+ apache:
+  build:
+   context: './apache/'
+  depends_on:
+   - mysql
+   - php
+  networks:
+   - frontend
+   - backend
+  ports:
+   - "6666:80"
+  volumes:
+   - "./www/:/var/www/html/"
+networks:
+ backend:
+ frontend:
+volumes:
+ mysql:
